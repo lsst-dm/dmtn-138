@@ -48,7 +48,7 @@
 
    **This technote is not yet published.**
 
-   In order to better support agility and management of third-party dependencies, reduce conflicts when compiling the stack on new and older systems, simplify distribution releases and installation of builds, we propose switching to conda-forge for managing third-party dependencies and adopting the conda compiler, the adoption of several new conda recipes, and some small changes to eups and the lsst-build system.
+   To to better support agility and management of third-party dependencies, reduce conflicts when compiling the stack on new and older systems, simplify distribution releases and installation of builds, we propose switching to conda-forge for managing third-party dependencies and adopting the conda compiler, the adoption of several new conda recipes, and some small changes to eups and the lsst-build system.
 
 
 Switching to conda-forge for third parties and compilers
@@ -75,17 +75,17 @@ breakage - centos7+devtoolset requires the pre-5.1 GCC ABI. So the
 options, for centos7 for example, are to either require a user to
 install system dependencies and a compiler themselves or get them from
 conda-forge, or through other non-standard channels. Retrieving those
-dependencies from conda-forge would be the most user friendly way.
+dependencies from conda-forge would be the most user-friendly way.
 
 Matthew Becker merged conda compiler support into sconsUtils, so using
-conda compilers should work just fine, although they are not battle
-tested. I've been testing with conda compilers on linux since July, and
-things tend to work just fine with that. I had issues with Mac compilers
-but I think those may be resolved now. *I will be testing this some more
-in the coming weeks*
+conda compilers should work just fine, although they are not battle-tested. 
+Testing with conda compilers on linux has occurred since July, and
+things tend to work just fine with that. Some issues with Mac compilers
+have occured in the past but are believe to be  resolved now. *Further
+testing will occur before this proposal is accepted.*
 
-Currently, If a user is using a newer system with the native compilers,
-or newer compilers on an older system, there may still be issues around
+Currently, if a user is using a newer system with the native compilers,
+or a newer compilers on an older system, there may still be issues around
 using those compilers even with the conda-forge third parties. In any
 case - conda compiler or newer compiler on top of conda - **additional
 testing will still be required to ensure that builds work in all cases,
@@ -98,7 +98,7 @@ Installing the stack and environment
 eups and conda are still underpinning the use cases for both developers
 and users, how those environments are installed and managed is
 different. Importantly, in both cases, we rely on activation scripts
-(scripts in ``activate.d``) in both cases to properly setup the terminal
+(scripts in ``activate.d``) in both cases to properly configure the terminal
 when a conda environment is activated. In both cases, we also will have
 ``scipipe_conda_env`` transformed into an eups package, which ``base``
 will require.
@@ -118,13 +118,13 @@ Matthew Becker has created the
 collection of conda recipes, for building and distributing the stack.
 This ecosystem is oriented around a modified ``eups distrib install``
 workflow that consumes stack **releases**, *ideally within the
-conda-forge CI system*. Users, in fact, get an extremely simplified
-installation, as the stack is distributed similar to other conda-forge
+conda-forge CI system*. Users get an extremely simplified
+installation, as the stack is distributed similarly to other conda-forge
 package. The target for this use case, at least within the context of
 conda-forge, is really for releases only, which probably does not
 include weekly or daily builds, as these are not LSST releases, and
 conda-forge CI resources are relatively precious. It's important to note
-that conda-forge states that is not suitable as a target for rapid
+that conda-forge states that it is not suitable as a target for rapid
 development. As is stated in their orgnazation guidelines:
 
    Publishing a package to conda-forge signals it is suitable for users
@@ -159,7 +159,7 @@ relies on ``activate.d`` to setup that\ ``lsst_distrib`` tag on
 environment activation.
 
 Stackvana uses semantic pinning derived from exact pinning in
-``scipipe_conda_env`` in it's build recipe to install dependencies. This
+``scipipe_conda_env`` in its build recipe to install dependencies. This
 is a slight departure from how ``scipipe_conda_env`` has worked to date,
 which uses exact pinning. Stackvana version numbers track lsst_distrib
 version numbers.
@@ -171,8 +171,8 @@ away.
 
 Some splitting up some of lsst_distrib into individual stackvana
 components (e.g. ``stackvana-afw``) may be required to keep compliation
-times down fore the conda-forge CI system, although we are able to
-finish the build within the current limits.
+times down for the conda-forge CI system, although we can finish the 
+build within the current limits.
 
 Developers start with a toolset environment
 -------------------------------------------
@@ -234,7 +234,7 @@ eupspkg.
 
 Nate's code had relied on manipulating environment variables in the
 table file as conda does, by setting ``CONDA_PREFIX``, appending paths,
-etc... However, when conda is activated, ``conda`` is actually a shell
+etc... However, when conda is activated, ``conda`` is a shell
 function intended to be a wrapper over the actual conda CLI, modifying
 the environment as necessary when switching between conda environments
 or installing dependencies, as ``setup`` does as well, so this breaks or
@@ -248,15 +248,15 @@ notifying you with an error:
 
 To address this, we can add new actions for an eups table file:
 
--  ``activateCondaEnv(...)``
--  ``activateCondaEnvStacked(...)``
+-  ``condaActivate(...)``
+-  ``condaActivateStacked(...)``
 
-This actions will emit ``conda activate {env_name}`` and
+These actions will emit ``conda activate {env_name}`` and
 ``conda deactivate`` statements which get evaluated by running
 ``setup``. The assumption here is that conda has been activated, which
 it should have been if you can use eups. The second action,
-``activateCondaEnvStacked`` is the one we actually need, but I'm
-proposing adding both to eups, since the semantics are slightly
+``condaActivateStacked`` is the one we actually need, but it is
+proposed to add both to eups, as the semantics are slightly
 different.
 
 The lsst_toolset_env package will be derived from the stackvana-core
@@ -268,9 +268,9 @@ an eups remap file for that package.
 Relatedly, in both the stackvana case and the developer case, there is
 one important caveat to note by having ``base`` depend on
 ``scipipe_conda_env``. If a product, such as ``qserv`` or sims, wishes
-to define it's own environment but relies a dependency which relies on
+to define its environment, but relies a dependency which relies on
 ``base``, they will likely need to either remap ``scipipe_conda_env``
-with their own environment, or produce their own version of
+with their environment, or produce their version of
 ``scipipe_conda_env`` and rely on version restrictions in their table
 file on ``scipipe_conda_env``. There may be some other solution that
 hasn't been identified. This isn't any different than the current
@@ -326,7 +326,7 @@ eups, lsst-build, lsstsw, newinstall, repos, versiondb, sconsUtils, loadLSST.bas
 By starting with conda environment and leveraging ``activate.d``
 scripts, I think it's possible to encapsulate the execution of
 lsstsw/bin/deploy, newinstall.sh, and loadLSST.bash so that parts of
-those scripts are ran at environment activation time. The interface is
+those scripts are run at environment activation time. The interface is
 ``conda activate``.
 
 Going a step further, moving eups-related commands in lsstsw into
@@ -361,11 +361,16 @@ product repos (e.g. git-lfs+afwdata).
 Conclusion
 ~~~~~~~~~~
 
-In conclusion, these are some thoughts and directions we are going.
-Stackvana can drastically simplify user installation in the case of
-consuming official releases. The toolset approach can provide developers
-flexibility they need with eups and play nicely with CI. We must support
-both.
+In conclusion, in this proposal we feel that Stackvana can drastically 
+simplify user installation in the case of consuming official releases. 
+The toolset approach can provide developers the flexibility they need 
+with eups and play nicely with CI. We should support both with new 
+conda environments and some modest changes to lsst-build and eups.
+In both cases, switching to conda-forge for third-party dependencies
+and compilers should improve compatibility for both newer and older
+operating systems, while keeping LSST software up-to-date with 
+external software.
+
 
 Footnotes
 ^^^^^^^^^
