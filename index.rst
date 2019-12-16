@@ -225,7 +225,7 @@ stacking. <#conda-environment-stacking>`__ The conda environment is an
 eups package based on Nate Lust's ``scipipe_conda`` package and
 ``scipipe_conda_env`` repo. Nate's code originally went one step further
 in relying on another ``miniconda`` eups package, so conda itself was
-installed with eups. I believe we should not do that because we still
+installed with eups. It is felt that is not ideal as we still
 need a suitable python environment for eups itself, and for path length
 reasons explained in detail in [2]. One thing to note that running
 ``setup -r .`` on the directory will not activate a complete environment
